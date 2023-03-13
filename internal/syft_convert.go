@@ -1,5 +1,7 @@
 package internal
 
+import "fmt"
+
 type Syft struct {
 	Artifacts []struct {
 		ID       string   `json:"id"`
@@ -18,4 +20,8 @@ type Syft struct {
 		//used to identify source id in ArtifactRelations
 		ID string `json:"id"`
 	} `json:"source"`
+}
+
+func (s *Syft) Convert() {
+	fmt.Println("Converting")
 }
