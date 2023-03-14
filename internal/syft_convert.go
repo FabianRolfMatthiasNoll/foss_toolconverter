@@ -39,11 +39,16 @@ func (syft *Syft) readJson(path string) (*Syft, error) {
 	return syft, err
 }
 
-func (s *Syft) Convert(inputPath string) (*models.SBOM, error) {
+func (s *Syft) Convert(inputPath, pkgPath string, npm bool) (*models.SBOM, error) {
 	syftReader := Syft{}
 	syft, syftErr := syftReader.readJson(inputPath)
 	if syftErr != nil {
 		return nil, syftErr
+	}
+
+	var tlDeps []string
+	if npm {
+		tlDeps, _ = Package.GetTopLevelDependencies(Package{}, pkgPath)
 	}
 
 	Dependencies := &models.SBOM{}
@@ -53,10 +58,15 @@ func (s *Syft) Convert(inputPath string) (*models.SBOM, error) {
 	}
 
 	for _, dep := range syft.Artifacts {
-		var toplevel = true
-
+		var toplevel bool
 		//Generating Language out of the start of the purl
 		language := strings.Split(dep.Purl, "/")[0][4:]
+
+		if language == "npm" && !contains(tlDeps, dep.Name) {
+			toplevel = false
+		} else {
+			toplevel = true
+		}
 
 		if !contains(Dependencies.Languages, language) {
 			Dependencies.Languages = append(Dependencies.Languages, language)
