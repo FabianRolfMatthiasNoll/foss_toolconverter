@@ -11,9 +11,9 @@ import (
 type Manager struct {
 }
 
-func (Manager) SyftToDep(inputPath, outputPath string, npm bool, npmPath string) {
+func (Manager) SyftToDep(inputPath, outputPath string, npm bool, pkgPath string) {
 	var syft Syft
-	dependencies, err := syft.Convert(inputPath)
+	dependencies, err := syft.Convert(inputPath, pkgPath, npm)
 	if err != nil {
 		log.Print(err)
 	}
