@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"foss_toolconverter/internal"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -15,19 +16,21 @@ var rootCmd = &cobra.Command{
 var convertCmd = &cobra.Command{
 	Use:   "convert [path]",
 	Short: "Convert file",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		inputPath := args[0]
+		outputPath := args[1]
 		npmPath, _ := cmd.Flags().GetString("npm")
+		var manager internal.Manager
 		if npmPath != "" {
+			//If npmPath wasnt set it will be set to true by cobra so we can check for that
 			if npmPath == "true" {
 				return fmt.Errorf("npm flag requires a path argument")
 			}
-			fmt.Println("Converting with npm behavior using package.json file:", npmPath)
+			//Converting with npm behavior using package.json file
 		} else {
-			fmt.Println("Converting without npm behavior")
+			manager.SyftToDep(inputPath, outputPath, false, npmPath)
 		}
-		fmt.Println("Path to input file:", inputPath)
 		return nil
 	},
 }
