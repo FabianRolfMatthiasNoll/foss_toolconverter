@@ -2,42 +2,38 @@ package cmd
 
 import (
 	"fmt"
-	"foss_toolconverter/internal"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "hello",
-	Short: "This is the first command",
-	Long: `A longer description 
-	for the first command`,
-
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("This is the first cobra example")
-	},
+	Use:   "FOSS_toolconverter",
+	Short: "Converts the Output of a tool to usable dependency format",
 }
 
 var convertCmd = &cobra.Command{
-	Use:     "convert",
-	Short:   "Converts Tool Output",
-	Long:    "Converts the Output of a Tool to a common structure",
-	Aliases: []string{"con"},
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		switch {
-		case args[0] == "syft":
-			var tool internal.Syft
-			tool.Convert()
-		default:
-			fmt.Println("No Tool specified")
+	Use:   "convert [path]",
+	Short: "Convert file",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		inputPath := args[0]
+		npmPath, _ := cmd.Flags().GetString("npm")
+		if npmPath != "" {
+			if npmPath == "true" {
+				return fmt.Errorf("npm flag requires a path argument")
+			}
+			fmt.Println("Converting with npm behavior using package.json file:", npmPath)
+		} else {
+			fmt.Println("Converting without npm behavior")
 		}
-
+		fmt.Println("Path to input file:", inputPath)
+		return nil
 	},
 }
 
 func init() {
+	convertCmd.Flags().String("npm", "", "Path to package.json file")
 	rootCmd.AddCommand(convertCmd)
 }
 
