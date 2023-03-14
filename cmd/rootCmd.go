@@ -27,7 +27,7 @@ var convertCmd = &cobra.Command{
 			if npmPath == "true" {
 				return fmt.Errorf("npm flag requires a path argument")
 			}
-			//Converting with npm behavior using package.json file
+			manager.SyftToDep(inputPath, outputPath, true, npmPath)
 		} else {
 			manager.SyftToDep(inputPath, outputPath, false, npmPath)
 		}
